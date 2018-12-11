@@ -1,25 +1,41 @@
 var express = require('express');
-var exphbs  = require('express-handlebars');
+var exphbs = require('express-handlebars');
 var app = express();
 var os = require("os");
-var morgan  = require('morgan');
+var morgan = require('morgan');
 
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+var nocache = require('nocache');
+app.use(nocache());
+
+app.engine('handlebars', exphbs({
+  defaultLayout: 'main'
+}));
 app.set('view engine', 'handlebars');
 app.use(express.static('static'));
 app.use(morgan('combined'));
 
 // Configuration
 var port = process.env.PORT || 8080;
-var message = process.env.MESSAGE || "Hello world!";
+var message = process.env.MESSAGE || "Hello cisco TAC!";
 
 app.get('/', function (req, res) {
+  console.log(req.headers);
+  if (req.headers.accept && req.headers.accept.indexOf('html') > -1) {
     res.render('home', {
       message: message,
       platform: os.type(),
       release: os.release(),
       hostName: os.hostname()
     });
+  } else {
+    res.send({
+      message: message,
+      platform: os.type(),
+      release: os.release(),
+      hostName: os.hostname()
+    });
+  }
+
 });
 
 // Set up listener
