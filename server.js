@@ -6,6 +6,7 @@ var morgan = require('morgan');
 
 var nocache = require('nocache');
 app.use(nocache());
+app.disable('etag');
 
 app.engine('handlebars', exphbs({
   defaultLayout: 'main'
